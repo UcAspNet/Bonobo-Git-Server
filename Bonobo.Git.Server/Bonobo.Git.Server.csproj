@@ -29,14 +29,19 @@
     </UpgradeBackupLocation>
     <OldToolsVersion>4.0</OldToolsVersion>
     <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
+    <IISExpressAnonymousAuthentication>
+    </IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>
+    </IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>
+    </IISExpressUseClassicPipelineMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <MvcProjectUpgradeChecked>true</MvcProjectUpgradeChecked>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <Use64BitIISExpress />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -555,11 +560,27 @@
     <Content Include="Content\components\font-awesome\fonts\FontAwesome.otf" />
     <Content Include="Content\components\highlight\styles\github.css" />
     <Content Include="Content\components\pure\pure-min.css" />
+    <Content Include="Content\css\bootstrap.css" />
+    <Content Include="Content\css\bootstrap.min.css" />
+    <Content Include="Content\css\demo.css" />
+    <Content Include="Content\css\main.css" />
     <Content Include="Content\fonts.css" />
     <Content Include="Content\fonts\opensans-bold.svg" />
     <Content Include="Content\fonts\opensans-light.svg" />
     <Content Include="Content\fonts\opensans-regular.svg" />
-    <Content Include="Content\images\git-logo.png" />
+    <Content Include="Content\img\git-logo.png" />
+    <Content Include="Content\img\apple-icon.png" />
+    <Content Include="Content\img\favicon.png" />
+    <Content Include="Content\img\login-bg.jpg" />
+    <Content Include="Content\img\logo-dark.png" />
+    <Content Include="Content\img\profile-bg.png" />
+    <Content Include="Content\img\user-medium.png" />
+    <Content Include="Content\img\user.png" />
+    <Content Include="Content\img\user1.png" />
+    <Content Include="Content\img\user2.png" />
+    <Content Include="Content\img\user3.png" />
+    <Content Include="Content\img\user4.png" />
+    <Content Include="Content\img\user5.png" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Scripts\clipboard.min.js" />
@@ -580,6 +601,39 @@
     <Content Include="Scripts\MicrosoftMvcValidation.debug.js" />
     <Content Include="Scripts\MicrosoftMvcValidation.js" />
     <Content Include="Scripts\RepositoryGroupToggle.js" />
+    <Content Include="Scripts\scripts\klorofil-common.js" />
+    <Content Include="Scripts\vendor\bootstrap\css\bootstrap-theme.css" />
+    <Content Include="Scripts\vendor\bootstrap\css\bootstrap-theme.min.css" />
+    <Content Include="Scripts\vendor\bootstrap\css\bootstrap.css" />
+    <Content Include="Scripts\vendor\bootstrap\css\bootstrap.min.css" />
+    <Content Include="Scripts\vendor\bootstrap\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Scripts\vendor\bootstrap\js\bootstrap.js" />
+    <Content Include="Scripts\vendor\bootstrap\js\bootstrap.min.js" />
+    <Content Include="Scripts\vendor\bootstrap\js\npm.js" />
+    <Content Include="Scripts\vendor\chartist\css\chartist-custom.css" />
+    <Content Include="Scripts\vendor\chartist\css\chartist.css" />
+    <Content Include="Scripts\vendor\chartist\css\chartist.min.css" />
+    <Content Include="Scripts\vendor\chartist\js\chartist.js" />
+    <Content Include="Scripts\vendor\chartist\js\chartist.min.js" />
+    <Content Include="Scripts\vendor\font-awesome\css\font-awesome.css" />
+    <Content Include="Scripts\vendor\font-awesome\css\font-awesome.min.css" />
+    <Content Include="Scripts\vendor\font-awesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="Scripts\vendor\jquery-slimscroll\jquery.slimscroll.js" />
+    <Content Include="Scripts\vendor\jquery-slimscroll\jquery.slimscroll.min.js" />
+    <Content Include="Scripts\vendor\jquery.easy-pie-chart\angular.easypiechart.js" />
+    <Content Include="Scripts\vendor\jquery.easy-pie-chart\angular.easypiechart.min.js" />
+    <Content Include="Scripts\vendor\jquery.easy-pie-chart\easypiechart.js" />
+    <Content Include="Scripts\vendor\jquery.easy-pie-chart\easypiechart.min.js" />
+    <Content Include="Scripts\vendor\jquery.easy-pie-chart\jquery.easypiechart.js" />
+    <Content Include="Scripts\vendor\jquery.easy-pie-chart\jquery.easypiechart.min.js" />
+    <Content Include="Scripts\vendor\jquery\jquery.js" />
+    <Content Include="Scripts\vendor\jquery\jquery.min.js" />
+    <Content Include="Scripts\vendor\linearicons\fonts\Linearicons-Free.svg" />
+    <Content Include="Scripts\vendor\linearicons\style.css" />
+    <Content Include="Scripts\vendor\toastr\toastr.css" />
+    <Content Include="Scripts\vendor\toastr\toastr.js" />
+    <Content Include="Scripts\vendor\toastr\toastr.min.css" />
+    <Content Include="Scripts\vendor\toastr\toastr.min.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -636,6 +690,8 @@
     <Content Include="Content\fonts\opensans-regular.ttf" />
     <Content Include="Content\fonts\opensans-regular.woff" />
     <Content Include="App_Data\.gitconfig" />
+    <Content Include="Content\css\demo.css.map" />
+    <Content Include="Content\css\main.css.map" />
     <None Include="Properties\PublishProfiles\Release.pubxml" />
     <Content Include="Views\Repository\Blob.cshtml" />
     <Content Include="Views\Repository\Clone.cshtml" />
@@ -646,6 +702,24 @@
     <None Include="Properties\PublishProfiles\Test.pubxml" />
     <Content Include="Views\Repository\Tags.cshtml" />
     <Content Include="Views\Repository\_Tag.cshtml" />
+    <Content Include="Scripts\vendor\bootstrap\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Scripts\vendor\bootstrap\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Scripts\vendor\bootstrap\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Scripts\vendor\bootstrap\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Scripts\vendor\chartist\css\chartist-custom.css.map" />
+    <Content Include="Scripts\vendor\chartist\map\chartist.css.map" />
+    <Content Include="Scripts\vendor\chartist\map\chartist.min.js.map" />
+    <Content Include="Scripts\vendor\chartist\scss\chartist.scss" />
+    <Content Include="Scripts\vendor\font-awesome\fonts\fontawesome-webfont.eot" />
+    <Content Include="Scripts\vendor\font-awesome\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Scripts\vendor\font-awesome\fonts\fontawesome-webfont.woff" />
+    <Content Include="Scripts\vendor\font-awesome\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Scripts\vendor\font-awesome\fonts\FontAwesome.otf" />
+    <Content Include="Scripts\vendor\jquery\jquery.min.map" />
+    <Content Include="Scripts\vendor\linearicons\fonts\Linearicons-Free.eot" />
+    <Content Include="Scripts\vendor\linearicons\fonts\Linearicons-Free.ttf" />
+    <Content Include="Scripts\vendor\linearicons\fonts\Linearicons-Free.woff" />
+    <Content Include="Scripts\vendor\linearicons\fonts\Linearicons-Free.woff2" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -743,7 +817,16 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:4414/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>
     </VisualStudio>

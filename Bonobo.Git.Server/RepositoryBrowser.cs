@@ -288,6 +288,33 @@ namespace Bonobo.Git.Server
                 IsImage = FileDisplayHandler.IsImage(entry.Name),
             };
         }
+        private Commit GetCommits(string name, out string referenceName)
+        {
+            referenceName = null;
+
+            if (string.IsNullOrEmpty(name))
+            {
+                referenceName = _repository.Head.FriendlyName;
+                return _repository.Head.Tip;
+            }
+
+            var branch = _repository.Branches[name];
+            if (branch != null && branch.Tip != null)
+            {
+                referenceName = branch.FriendlyName;
+                return branch.Tip;
+            }
+
+            var tag = _repository.Tags[name];
+            if (tag == null)
+            {
+                return _repository.Lookup(name) as Commit;
+            }
+
+            referenceName = tag.FriendlyName;
+            return tag.Target as Commit;
+        }
+
 
         private Commit GetCommitByName(string name, out string referenceName)
         {

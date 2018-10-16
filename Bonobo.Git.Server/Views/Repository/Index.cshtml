@@ -27,34 +27,7 @@
     }
 }
 
-<div class="pure-g">
-    <div class="pure-u-2-5">
-        <h1>
-            @Resources.Repository_Index_Title
-        </h1>
-    </div>
-    <div class="pure-u-3-5 add">
-        @{
-            var sortGroupQuery = Request.QueryString["sortGroup"];
 
-            var sortGroup = new
-            {
-                sortGroup = string.IsNullOrEmpty(sortGroupQuery) ? "DESC" : ((sortGroupQuery.Equals("ASC") ? "DESC" : "ASC"))
-            };
-        }
-
-        <a class="pure-button pure-button-primary" href="@Url.Action("Index", sortGroup)"><i class="fa fa-sort"></i> @Resources.Repository_Index_SortGroup</a>
-
-        @if (User.IsInRole(Definitions.Roles.Administrator) || UserConfiguration.Current.AllowUserRepositoryCreation)
-        {
-            <a class="pure-button pure-button-primary" href="@Url.Action("Create")"><i class="fa fa-plus-circle"></i> @Resources.Repository_Index_CreateNew</a>
-        }
-        @if (User.IsInRole(Definitions.Roles.Administrator))
-        {
-            <form action="@Url.Action("Rescan", new { id = "x" })" method="post" class="inline-form"><button type="submit" class="pure-button pure-button-primary"><i class="fa fa-refresh"></i>@Resources.Repository_Rescan_Directory</button></form>
-        }
-    </div>
-</div>
 
 @{
     object RepoNotFoundObj;
@@ -74,7 +47,7 @@
 {
     <div class="summary-success">
         <p>@Resources.Repository_Create_Success</p>
-                <p>@Html.ActionLink(string.Format(@Resources.Repository_Create_Success_Go_To, TempData["SuccessfullyCreatedRepositoryName"].ToString()), "Detail", new { id = TempData["SuccessfullyCreatedRepositoryId"].ToString() })</p>
+        <p>@Html.ActionLink(string.Format(@Resources.Repository_Create_Success_Go_To, TempData["SuccessfullyCreatedRepositoryName"].ToString()), "Detail", new { id = TempData["SuccessfullyCreatedRepositoryId"].ToString() })</p>
     </div>
 }
 @if (TempData["CloneSuccess"] as bool? == true)
@@ -90,15 +63,8 @@
     </div>
 }
 
-@using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "pure-form" }))
-{
-    <p>
-        @Html.TextBox("SearchString")
-        <input type="submit" value="@Resources.Search" class="pure-button pure-button-primary" />
-    </p>
-}
 
-<div class="pure-g">
+<div class="row">
     @{
         foreach (KeyValuePair<string, RepositoryDetailModel[]> model in Model)
         {
@@ -106,80 +72,56 @@
 
             if (!emptyGroup)
             {
-                <div class="pure-u-1">
-                    <h2 class="group">
-                        <span class="toggle" data-group="@(model.Key)"></span>
+                <div class="col-md-12 alert alert-info alert-dismissible">
+                    <h2 class="group" style="margin-left:20px;">
+                        <span class="lnr lnr-inbox" data-group="@(model.Key)"></span>
                         @(model.Key)
                     </h2>
                 </div>
             }
-            // https://dusted.codes/making-font-awesome-awesome-using-icons-without-i-tags
-            <div class="pure-u-1">
-                @{
-                    var permitted = new WebGrid(source: model.Value, defaultSort: "Name", rowsPerPage: 15);
-
-
-                    var columns = new List<WebGridColumn>();
-                    columns.Add(permitted.Column(
-                        format: item => Html.Raw(item.Logo.Exists ? string.Format("<img src='data:image/png;base64,{0}' class='repo-logo' />", item.Logo.Base64Image) : ""),
-                        style: "logo"
-                    ));
-                    columns.Add(permitted.Column("Name",
-                        header: typeof(RepositoryDetailModel).GetDisplayValue("Name"),
-                        format: (item) => Html.ActionLink(
-                                GetNameToDisplay((string)item.Name, (RepositoryDetailStatus)item.Status),
-
-                                "Detail",
-                                new { id = item.Id },
-                                new
+            foreach (RepositoryDetailModel detail in model.Value)
+            {
+                <div class="col-md-4">
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <a href="/Repository/Detail/@detail.Id"><i class="lnr lnr-map"></i>@detail.Name</a>
+                                </div>
+                                <div class="col-md-4" style=" text-align:right">
+                                    <a href="@Url.Action("Edit","Repository", new { id = detail.Id })"><i class="fa fa-pencil-square-o"></i> @Resources.Repository_Detail_Edit</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row" style="height:85px; word-break:break-all; overflow:hidden">
+                                @if (detail.Logo.Base64Image != null)
                                 {
-                                    @class = "RepositoryName detail" + (item.Logo.Exists ? " customLogo" : ""),
-                                    @id = "repo_" + item.Id,
+                                    <image src="data:image/png;base64,@detail.Logo.Base64Image" style="max-height:60px; float:left; margin:10px; "></image>
                                 }
-                                )));
+                                @detail.Description
+                            </div>
 
-                    if (User.IsInRole(Definitions.Roles.Administrator))
-                    {
-                        columns.Add(permitted.Column(
-                            format: (item) =>
-                            {
-                                var repo = (RepositoryDetailModel)item.Value;
-                                var anonColor = repo.AllowAnonymous ? "rgba(0, 120, 230, 1)" : "lightblue";
-                                var anonTitle = Resources.Repository_Detail_Anonymous + ": " + (repo.AllowAnonymous ? Resources.Yes : Resources.No);
 
-                                var pushSetting = UserConfiguration.Current.AllowAnonymousPush;
-                                if(repo.AllowAnonymousPush != RepositoryPushMode.Global){
-                                    pushSetting = repo.AllowAnonymousPush == RepositoryPushMode.Yes;
-                                }
 
-                                var pushIcon = repo.AllowAnonymousPush == RepositoryPushMode.Global ? "fa-globe" : "fa-sign-in";
-                                var pushTitle = Resources.Repository_Detail_AllowAnonymousPush + ": " + (pushSetting ? Resources.Yes : Resources.No);
-                                var pushColor = pushSetting ? "rgba(0, 120, 230, 1)" : "lightblue";
-                                var ret = Html.Raw("<span class='fa-fw'>").ToHtmlString();
-                                ret += Html.Raw("<div class='fa fa-sign-out' style='display: block; color: " + anonColor + "' title='" + anonTitle + "'></div>").ToHtmlString();
-                                ret += Html.Raw("<div class='fa " + pushIcon + "' style='display: block; color: " + pushColor + "' title='" + pushTitle + "'></div>").ToHtmlString();
-                                ret += Html.Raw("</span>").ToHtmlString();
-                                return Html.Raw(ret);
+
+                            @if (detail.Administrators.Length > 0)
+                            {<div class="row">
+                                    <i class="lnr lnr-user"></i>
+                                    @detail.Administrators[0].DisplayName
+                                </div>
                             }
-                        ));
-                    }
 
-                    columns.Add(permitted.Column("Description", typeof(RepositoryDetailModel).GetDisplayValue("Description"), format: (item) => ((item.Description != null && ((string)item.Description).Length > 100)) ? ((string)item.Description).Substring(0, 100) + " ... " : item.Description, style: "description"));
-                    columns.Add(permitted.Column(format: (item) => Html.Raw("<button class=\"pure-button pure-button-primary copy-to-clip-button\" title=\"" + Resources.Repository_Git_Url_Copy + "\" data-clipboard-text=\"" + Html.Encode(item.GitUrl) + "\"><i class=\"fa fa-copy\" ></i></button>"), style: "action"));
-                    columns.Add(permitted.Column(format: (item) => Html.Raw(String.IsNullOrWhiteSpace(item.PersonalGitUrl) ? "&nbsp" :"<button class=\"pure-button pure-button-primary copy-to-clip-button\" title=\"" + Resources.Repository_Personal_Git_Url_Copy + "\" data-clipboard-text=\"" + Html.Encode(item.PersonalGitUrl) + "\"><i class=\"fa fa-user\"></i><i class=\"fa fa-copy\"></i></button>"), style: "action"));
-                    columns.Add(permitted.Column(format: (item) => ((RepositoryDetailModel)item.Value).IsCurrentUserAdministrator ? Html.ActionLink(" ", "Edit", new { id = item.Id }, new { @class = "edit", title = Resources.Grid_Edit }) : Html.Raw("&nbsp;"), style: "action"));
-                    columns.Add(permitted.Column(format: (item) => ((RepositoryDetailModel)item.Value).IsCurrentUserAdministrator ? Html.ActionLink(" ", "Delete", new { id = item.Id }, new { @class = "delete", title = Resources.Grid_Delete }) : Html.Raw("&nbsp;"), style: "action"));
 
-                    permitted.Columns(columns.ToArray());
-                    @permitted.GetHtml(
-                        tableStyle: "pure-table repositories",
-                        columns: columns,
-                        htmlAttributes: new { @Id = "Repositories" }
-                        )
-                }
-            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            }
         }
     }
+
 </div>
 
 @section scripts{

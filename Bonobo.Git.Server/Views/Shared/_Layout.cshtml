@@ -1,82 +1,204 @@
-﻿<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="en">
+
 <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta charset="utf-8" />
-    <link rel="shortcut icon" href="~/favicon.ico?v=2" type="image/x-icon" />
     <title>@ViewBag.Title :: @UserConfiguration.Current.GetSiteTitle()</title>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="/favicon.ico?v=2" type="image/x-icon" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <!-- VENDOR CSS -->
+    <link rel="stylesheet" href="~/Scripts/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/Scripts/vendor/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/Scripts/vendor/linearicons/style.css">
+    <link rel="stylesheet" href="~/Scripts/vendor/chartist/css/chartist-custom.css">
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="~/Content/css/main.css">
+
+
     @Styles.Render("~/Content/bundledCss")
     @if (UserConfiguration.Current.HasCustomSiteCss)
     {
         <link rel="stylesheet" href="@string.Format("{0}?_={1}", Url.Content(UserConfiguration.Current.SiteCssUrl), DateTime.Now.Ticks)" type="text/css" />
     }
-    @if (UserConfiguration.Current.HasCustomSiteLogo)
-    {
-    <style>
-        .navigation.pure-menu a.pure-menu-heading {
-            background: url('@Url.Content(UserConfiguration.Current.SiteLogoUrl)') no-repeat 0 4px;
-        }
-    </style>
-    }
-</head>
-<body class="@HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString() @HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString()">
-    <div class="main">
-        <div class="header">
-            <div class="navigation pure-menu pure-menu-open pure-menu-horizontal">
-                @Html.ActionLink(UserConfiguration.Current.GetSiteTitle(), "", "", null, new { @class = "pure-menu-heading" })
 
-                <ul>
-                    @if (Request.IsAuthenticated)
-                    {
-                        var items = (IEnumerable<SelectListItem>)Html.ViewBag.PermittedRepositories;
-                        @Html.DropDownList("Repositories", items, Resources.Repository_Go_To_Dropdown, new { @class = "repositories", @onChange = "javascript:location.href=this.options[this.selectedIndex].value;" });
-                        <li><a href="@Url.Action("Index", "Repository")" class="repository"><i class="fa fa-hdd-o"></i> @Resources.Layout_Repositories</a></li>
-                    }
-                    @if (User.IsInRole(Definitions.Roles.Administrator))
-                    {
-                        <li><a href="@Url.Action("Index", "Account")" class="users"><i class="fa fa-user"></i> @Resources.Layout_AdministrationUsers</a></li>
-                        <li><a href="@Url.Action("Index", "Team")" class="teams"><i class="fa fa-group"></i> @Resources.Layout_AdministrationTeams</a></li>
-                        <li><a href="@Url.Action("Index", "Settings")" class="settings"><i class="fa fa-gears"></i> @Resources.Layout_AdministrationGlobalSettings</a></li>
-                    }
-                    @if (Request.IsAuthenticated)
-                    {
-                        <li class="separator"><a href="@Url.Action("Edit", "Account", new { id = User.Id() })"><i class="fa fa-male"></i> @User.DisplayName()</a></li>
-                        if (!User.IsWindowsAuthenticated())
+</head>
+
+<body class="@HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString() @HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString()">
+    <div id="wrapper">
+
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="brand">
+                @if (UserConfiguration.Current.HasCustomSiteLogo)
+                {
+                    <a href="/"><img src="@Url.Content(UserConfiguration.Current.SiteLogoUrl)" alt="@UserConfiguration.Current.GetSiteTitle()" class="img-responsive logo"></a>
+
+                }
+                else
+                {
+                    <a href="/"><img src="~/Content/img/git-logo.png" alt="@UserConfiguration.Current.GetSiteTitle()" class="img-responsive logo"></a>
+                }
+
+            </div>
+            <div class="container-fluid">
+                <div class="navbar-btn">
+                    <button type="button" class="btn-toggle-fullwidth"><i class="lnr lnr-arrow-left-circle"></i></button>
+                </div>
+
+
+                @using (Html.BeginForm("Index", "Repository", FormMethod.Post, new { @class = "navbar-form navbar-left" }))
+                {<div class="input-group">
+
+                        @Html.TextBox("SearchString", "", htmlAttributes: new { @class = "form-control", placeholder = "搜索全部项目" })
+                        <span class="input-group-btn"><input type="submit" value="@Resources.Search" class="btn btn-primary" /></span>
+                    </div>
+                }
+                @if (User.IsInRole(Definitions.Roles.Administrator) || UserConfiguration.Current.AllowUserRepositoryCreation)
+                {
+
+                    <div class="navbar-btn navbar-btn-right">
+
+
+                        <a class="btn btn-success update-pro" href="@Url.Action("Create")" title="@Resources.Repository_Index_CreateNew">
+                            <i class="fa fa-plus-circle"></i> <span>
+                                @Resources.Repository_Index_CreateNew
+
+                            </span>
+
+                        </a>
+
+
+                        <div class="btn btn-success update-pro refresh-dir">
+                            <i class="fa fa-refresh"></i>@Resources.Repository_Rescan_Directory
+
+                        </div>
+
+                    </div>
+                }
+
+                <div id="navbar-menu">
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="https://github.com/UcAspNet/Bonobo-Git-Server" target="_blank"><i class="fa fa-github"></i>@Resources.Source</a>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="~/Content/img/user.png" class="img-circle" alt="Avatar"> <span>@User.DisplayName()</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                @if (User.IsInRole(Definitions.Roles.Administrator))
+                                {
+                                    <li><a href="@Url.Action("Index", "Account")" class="users"><i class="fa fa-user"></i> @Resources.Layout_AdministrationUsers</a></li>
+                                    <li><a href="@Url.Action("Index", "Team")" class="teams"><i class="fa fa-group"></i> @Resources.Layout_AdministrationTeams</a></li>
+                                    <li><a href="@Url.Action("Index", "Settings")" class="settings"><i class="fa fa-gears"></i> @Resources.Layout_AdministrationGlobalSettings</a></li>
+                                }
+                                @if (Request.IsAuthenticated)
+                                {
+                                    <li class="separator"><a href="@Url.Action("Edit", "Account", new { id = User.Id() })"><i class="fa fa-male"></i> @User.DisplayName()</a></li>
+                                    if (!User.IsWindowsAuthenticated())
+                                    {
+                                        <li><a href="@Url.Action("LogOff", "Home")"><i class="fa fa-sign-out"></i> @Resources.Layout_LogOff</a></li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li><a href="@Url.Action("LogOn", "Home", new { id = User.Id() })"><i class="fa fa-sign-in"></i> @Resources.Layout_LogOn</a></li>
+                                    if (UserConfiguration.Current.AllowAnonymousRegistration)
+                                    {
+                                        <li><a href="@Url.Action("Create", "Account")"><i class="fa fa-pencil"></i> @Resources.Layout_Register</a></li>
+                                    }
+                                }
+                            </ul>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- LEFT SIDEBAR -->
+        <div id="sidebar-nav" class="sidebar">
+            <div class="sidebar-scroll">
+                <nav>
+                    <ul class="nav">
+                        <li><a href="/Repository/" class="active"><i class="lnr lnr-home"></i> <span>项目</span></a></li>
+                        <li><a href="elements.html" class=""><i class="lnr lnr-code"></i> <span>动态</span></a></li>
+                        <li><a href="charts.html" class=""><i class="lnr lnr-chart-bars"></i> <span>分组</span></a></li>
+
+
+                        @if (User.IsInRole(Definitions.Roles.Administrator))
                         {
-                            <li><a href="@Url.Action("LogOff", "Home")"><i class="fa fa-sign-out"></i> @Resources.Layout_LogOff</a></li>
+                            <li><a href="@Url.Action("Index", "Account")" class="users"><i class="fa fa-user"></i> @Resources.Layout_AdministrationUsers</a></li>
+                            <li><a href="@Url.Action("Index", "Team")" class="teams"><i class="fa fa-group"></i> @Resources.Layout_AdministrationTeams</a></li>
+                            <li><a href="@Url.Action("Index", "Settings")" class="settings"><i class="fa fa-gears"></i> @Resources.Layout_AdministrationGlobalSettings</a></li>
                         }
-                    }
-                    else
-                    {
-                        <li><a href="@Url.Action("LogOn", "Home", new { id = User.Id() })"><i class="fa fa-sign-in"></i> @Resources.Layout_LogOn</a></li>
-                        if (UserConfiguration.Current.AllowAnonymousRegistration)
-                        {
-                            <li><a href="@Url.Action("Create", "Account")"><i class="fa fa-pencil"></i> @Resources.Layout_Register</a></li>
-                        }
-                    }
-                </ul>
+
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <!-- END LEFT SIDEBAR -->
+
+
+
+
+
+
+        <div class="main" id="@ViewContext.ViewData["PageID"]">
+            <div class="main-content">
+                <div class="container-fluid">
+                    <div class="panel panel-headline">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">@ViewBag.Title </h3>
+
+                        </div>
+                        @RenderBody()
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="content" id="@ViewContext.ViewData["PageID"]">
-            @RenderBody()
-        </div>
+        <div class="clearfix"></div>
 
-        <div class="footer">
-            <p>
+
+
+
+    </div>
+
+    <!--footer>
+        <div class="container-fluid">
+            <p class="copyright">
+
                 @if (UserConfiguration.Current.HasSiteFooterMessage)
                 {
                     @UserConfiguration.Current.SiteFooterMessage
                     @:&middot;
                 }
-                Bonobo Git Server (@Html.AssemblyVersion()) &copy; 2015 <a href="http://www.chodounsky.net">Jakub Chodounský</a>
-                &middot; <a href="http://bonobogitserver.com/">@Resources.Home</a> 
-                &middot; <a href="https://github.com/jakubgarfield/Bonobo-Git-Server">@Resources.Source</a>
+                Bonobo Git Server (@Html.AssemblyVersion()) &copy; 2018
+            </p>
+            <p>
+                <a href="http://www.ucasp.net">Rixiang Yu </a>
+                &middot; <a href="http://bonobogitserver.com/">@Resources.Home</a>
+                &middot; <a href="https://github.com/UcAspNet/Bonobo-Git-Server">@Resources.Source</a>
             </p>
         </div>
-    </div>
-
+    </!--footer>-->
+    <script src="~/Scripts/vendor/jquery/jquery.min.js"></script>
+    <script src="~/Scripts/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/Scripts/vendor/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="~/Scripts/vendor/jquery.easy-pie-chart/jquery.easypiechart.min.js"></script>
+    <script src="~/Scripts/vendor/chartist/js/chartist.min.js"></script>
+    <script src="~/Scripts/scripts/klorofil-common.js"></script>
     @Scripts.Render("~/bundledJs")
     @RenderSection("scripts", required: false)
+    <script>
+        $(document).ready(function () {
+            $(".refresh-dir").click(function () {               
+                $.post("/Repository/Rescan/x", function (data, status) {
+                    window.location.reload();
+                });
+            });
+        });
+
+    </script>
 </body>
 </html>
