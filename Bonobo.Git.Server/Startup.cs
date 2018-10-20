@@ -14,6 +14,7 @@ namespace Bonobo.Git.Server
     {
         public void Configuration(IAppBuilder app)
         {
+
             DependencyResolver.Current.GetService<IAuthenticationProvider>().Configure(app);
         }
     }

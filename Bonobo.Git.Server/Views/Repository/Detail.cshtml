@@ -1,139 +1,76 @@
-﻿@model Bonobo.Git.Server.Models.RepositoryDetailModel
+﻿@model Bonobo.Git.Server.Models.RepositoryTreeModel
+@using Bonobo.Git.Server.Extensions
 @{
     Layout = "~/Views/Repository/_RepositoryLayout.cshtml";
-    ViewBag.Title = Resources.Repository_Detail_Title;
+    ViewBag.Title = Model.Name;
+
 }
 @if (Model != null)
 {
-    <div class="pure-form pure-form-aligned detail">
-        <fieldset>
-            <div class="pure-control-group">
-                @Html.LabelFor(m => m.Name)
-                @Model.Name
-                @switch (Model.Status)
-                {
-                    case RepositoryDetailStatus.Valid:
-                        break;
-                    case RepositoryDetailStatus.Missing:
-                        <span class="status">(Missing)</span>
-                        break;
-                    case RepositoryDetailStatus.Unknown:
-                    default:
-                    <span class="status">(Status Unknown)</span>
-                        break;
-                }
-            </div>
-            <div class="pure-control-group">
-                <label>@Resources.Repository_Detail_Location</label>
-                <button class="pure-button copy-to-clip-button" data-clipboard-target=".git-url-text"><i class="fa fa-copy"></i>@Resources.Copy</button>
-                <span class="git-url-text">@Model.GitUrl</span>
-            </div>
+    <div class="content">
+        @Html.Partial("_BranchSwitcher")
+        @Html.Partial("_AddressBar")
 
-            @if (User.Identity.IsAuthenticated) {
-                <div class="pure-control-group">
-                    <label>
-                        @Resources.Repository_Detail_Location_Personal
-                    </label>
-                    <button class="pure-button copy-to-clip-button" data-clipboard-target=".personal-url-text"><i class="fa fa-copy"></i>@Resources.Copy</button>
-                    <span class="personal-url-text">@Model.PersonalGitUrl</span>
-                </div>
-            }
-
-            <div class="pure-control-group">
-                @Html.LabelFor(m => m.Group)
-                @Model.Group
-            </div>
-            <div class="pure-control-group">
-                @Html.LabelFor(m => m.Description)
-                @Model.Description
-            </div>
-            <div class="pure-control-group">
-                @Html.LabelFor(m => m.AllowAnonymous)
-                @if (Model.AllowAnonymous)
+        <table id="files" class="pure-table">
+            <thead>
+                <tr>
+                    <th>@typeof(RepositoryTreeDetailModel).GetDisplayValue("Name")</th>
+                    <th>@typeof(RepositoryTreeDetailModel).GetDisplayValue("CommitMessage")</th>
+                    <th>@typeof(RepositoryTreeDetailModel).GetDisplayValue("CommitDate")</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Files)
                 {
-                    @Resources.Repository_Detail_Yes
-                }
-                else
-                {
-                    @Resources.Repository_Detail_No
-                }
-            </div>
-            <div class="pure-control-group">
-                @Html.LabelFor(m => m.AllowAnonymousPush)
-                @Html.DisplayEnum(Model.AllowAnonymousPush)
-            </div>
-
-            <div class="pure-control-group">
-                @Html.LabelFor(m => m.LinksUseGlobal)
-                @Html.CheckBoxFor(m => m.LinksUseGlobal, new { disabled=""})
-            </div>
-            <div class="pure-control-group">
-                @Html.LabelFor(m => m.LinksRegex)
-                @Html.TextBoxFor(m => m.LinksRegex, new { @readonly=""})
-            </div>
-            <div class="pure-control-group">
-                @Html.LabelFor(m => m.LinksUrl)
-                @Html.TextBoxFor(m => m.LinksUrl, new { @readonly=""})
-            </div>
-            @if (AppSettings.IsPushAuditEnabled) {
-                <div class="pure-control-group">
-                    @Html.LabelFor(m => m.AuditPushUser)
-                    @if (Model.AuditPushUser)
-                    {
-                        @Resources.Repository_Detail_Yes
-                    }
-                    else
-                    {
-                        @Resources.Repository_Detail_No
-                    }
-                </div>
-            }
-                <div class="pure-control-group">
-                @Html.LabelFor(m => m.Users)
-                @for (int i = 0; i < Model.Users.Length; i++)
-                {
-                        @Html.ActionLink(@Model.Users[i].DisplayName, "Detail", "Account", new { id = @Model.Users[i].Id}, new { title = @Model.Users[i].Username })
-                        if (i + 1 != Model.Users.Length)
-                        {
-                            <text>, </text>
-                        }
-                    }
-                </div>
-                <div class="pure-control-group">
-                @Html.LabelFor(m => m.Administrators)
-                @for (int i = 0; i < Model.Administrators.Length; i++)
-                    {
-                        @Html.ActionLink(@Model.Administrators[i].DisplayName, "Detail", "Account", new { id = @Model.Administrators[i].Id }, new { title = @Model.Administrators[i].Username })
-                        if (i + 1 != Model.Administrators.Length)
-                        {
-                            <text>, </text>
-                        }
-                    }
-                </div>
-                    <div class="pure-control-group">
-                        @Html.LabelFor(m => m.Teams)
-                        @for (int i = 0; i < Model.Teams.Length; i++)
-                        {
-                            @Html.ActionLink(@Model.Teams[i].DisplayName, "Detail", "Team", new { id = @Model.Teams[i].Id }, null)
-                            if (i + 1 != Model.Teams.Length)
+                    <tr>
+                        <td class="path">
+                            @if (item.IsLink)
                             {
-                                <text>, </text>
+                                <span class="directory">@item.Name</span>
                             }
-                        }
-                    </div>
-                <div class="pure-controls">
-                <a class="pure-button" href="@Url.Action("Index")"><i class="fa fa-long-arrow-left"></i> @Resources.Repository_Detail_Back</a>
-                @if (Model.IsCurrentUserAdministrator)
-                {
-                    <a class="pure-button" href="@Url.Action("Edit", new { id = Model.Id })"><i class="fa fa-pencil-square-o"></i> @Resources.Repository_Detail_Edit</a>
-                    <a class="pure-button" href="@Url.Action("Delete", new { id = Model.Id })"><i class="fa fa-trash-o"></i> @Resources.Repository_Detail_Delete</a>
+                            else if (item.IsTree)
+                            {
+                                @Html.ActionLink(item.Name, "Tree", new { id = ViewBag.ID, encodedName = PathEncoder.Encode(Model.Branch), encodedPath = PathEncoder.Encode(item.Path, allowSlash: true) }, new { @class = "directory" })
+                            }
+                            else
+                            {
+                                @Html.ActionLink(item.Name, "Blob", new { id = ViewBag.ID, encodedName = PathEncoder.Encode(Model.Branch), encodedPath = PathEncoder.Encode(item.Path, allowSlash: true) }, new { @class = item.IsImage ? "image" : "file" })
+                            }
+                        </td>
+                        <td class="message"></td>
+                        <td class="date"></td>
+                    </tr>
                 }
-                </div>
-</fieldset>
+            </tbody>
+        </table>
+
+        @if (!string.IsNullOrEmpty(Model.Readme))
+        {
+            <div class="markdown">@Html.MarkdownToHtml(Model.Readme)</div>
+        }
+
+        
     </div>
 }
 
 @section scripts
 {
-    <script>new Clipboard('.copy-to-clip-button');</script>
+    <script>
+        $(function () {
+            var url = '@Url.Action("Tree", ViewContext.RouteData.Values)';
+            $.ajax({ url: url, success: detailsLoaded, type: 'GET', dataType: 'json', cache: false });
+
+            function detailsLoaded(model) {
+                $("#files tbody > tr").each(function (index) {
+                    $(this).find(".message").html(model.Files[index].CommitMessage);
+                    $(this).find(".date").html(model.Files[index].CommitDateString);
+                });
+            }
+        });
+    </script>
+
+    @if (!string.IsNullOrEmpty(Model.Readme))
+    {
+        <script>hljs.configure({ tabReplace: '    ' }); hljs.initHighlightingOnLoad();</script>
+    }
 }
