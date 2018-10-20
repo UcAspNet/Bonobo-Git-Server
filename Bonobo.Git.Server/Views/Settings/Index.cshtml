@@ -5,7 +5,7 @@
     ViewBag.Title = Resources.Settings_Index_Title;
 }
 
-<h1>@Resources.Settings_Index_Title</h1>
+
 
 @if (TempData["UpdateSuccess"] != null && (bool)TempData["UpdateSuccess"])
 {
@@ -75,7 +75,7 @@
             <i class="fa fa-info-circle" title="@Resources.Settings_Global_LinksUrl_Hint"></i>
         </div>
         <div class="pure-controls">
-            <button type="submit" class="pure-button pure-button-primary"><i class="fa fa-save"></i> @Resources.Settings_Index_Save</button>
+            <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> @Resources.Settings_Index_Save</button>
         </div>
     </fieldset>
 }

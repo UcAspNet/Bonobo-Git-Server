@@ -1,0 +1,34 @@
+﻿
+@{
+    var branches = ViewData["branches"] as IEnumerable<string>;
+    ViewBag.Title = "Branches";
+}
+
+@{
+    ViewBag.Title = Resources.Repository_Commit_Detail;
+    Layout = "~/Views/Repository/_RepositoryLayout.cshtml";
+}
+@if (ViewData["branches"] != null)
+{
+    <nav class="branches">
+        <ul>
+            <li>
+                <a href="#" class=""branch"">@ViewData["referenceName"]</a>
+                @if (branches.Any())
+                {
+                    <ul>
+                        @{
+                            var action = ViewContext.RouteData.Values["Action"].ToString() == "Blob" ? "Tree" : ViewContext.RouteData.Values["Action"].ToString();
+                            foreach (var item in branches)
+                            {
+                                <li class="@(String.Equals(ViewData["referenceName"], item) ? "branch active" : "branch")">@Html.ActionLink(item as string, action, new { id = ViewContext.RouteData.Values["id"], encodedName = PathEncoder.Encode(item), encodedPath = String.Empty })</li>
+                            }
+                            
+                        }
+                    </ul>
+                }
+            </li>
+        </ul>
+    </nav>
+}
+

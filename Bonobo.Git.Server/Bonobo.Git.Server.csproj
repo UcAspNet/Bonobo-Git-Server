@@ -722,6 +722,7 @@
     <Content Include="Scripts\vendor\linearicons\fonts\Linearicons-Free.ttf" />
     <Content Include="Scripts\vendor\linearicons\fonts\Linearicons-Free.woff" />
     <Content Include="Scripts\vendor\linearicons\fonts\Linearicons-Free.woff2" />
+    <Content Include="Views\Repository\Branches.cshtml" />
     <None Include="Web.Test.config">
       <DependentUpon>Web.config</DependentUpon>
       <SubType>Designer</SubType>

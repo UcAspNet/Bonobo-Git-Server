@@ -82,6 +82,12 @@ namespace Bonobo.Git.Server
             return commits.OrderByDescending(x => x, (x, y) => x.Date.CompareTo(y.Date));
         }
 
+        public RepositoryCommitModel GetCommitDetail(string name, out string referenceName)
+        {
+
+            var commit = GetCommitByName(name, out referenceName);
+            return commit == null ? null : ToModel(commit, true);
+        }
         public RepositoryCommitModel GetCommitDetail(string name)
         {
             string referenceName;
@@ -161,7 +167,7 @@ namespace Bonobo.Git.Server
             }
 
             Encoding encoding;
-            if(FileDisplayHandler.TryGetEncoding(model.Data, out encoding))
+            if (FileDisplayHandler.TryGetEncoding(model.Data, out encoding))
             {
                 model.Text = FileDisplayHandler.GetText(model.Data, encoding);
                 model.Encoding = encoding;
@@ -205,7 +211,7 @@ namespace Bonobo.Git.Server
             return new RepositoryBlameModel
             {
                 Name = commit[path].Name,
-                TreeName =  referenceName,
+                TreeName = referenceName,
                 Path = path,
                 Hunks = hunks,
                 FileSize = modelBlob.Data.LongLength,

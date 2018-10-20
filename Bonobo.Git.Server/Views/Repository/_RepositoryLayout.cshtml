@@ -31,17 +31,24 @@ else
         </div>
         <br />
         <div class="row" style="vertical-align:central; text-align:center">
-            <div class="col-lg-3">
+               <div class="col-lg-2">
+                <a href="@Url.Action("Detail", new { id = ViewBag.ID })" style="width:100%"><i class="fa fa-random"></i> @Resources.Repository_Detail_Detail</a>
+            </div>
+             
+
+            <div class="col-lg-2">
                 <a href="@Url.Action("Commits", new { id = ViewBag.ID })" style="width:100%"><i class="fa fa-random"></i> @Resources.Repository_Layout_Commits</a> <span class="badge bg-danger">@ViewData["CommitCount"]</span>
             </div>
-            <div class="col-lg-3">
+            <div class="col-lg-2">
                 <a href="@Url.Action("Branches", new { id = ViewBag.ID })" class="branch" style="width:100%"><i ></i> 分支</a> <span class="badge bg-danger">@branches.Count()</span>
             </div>
-            <div class="col-lg-3">
+            <div class="col-lg-2">
                 <a href="@Url.Action("Tags", new { id = ViewBag.ID })" style="width:100%"><i class="fa fa-tag"></i> @Resources.Repository_Layout_Tags</a> <span class="badge bg-danger">@tags.Count()</span>
 
-            </div><div class="col-lg-3">
-    <a href="@Url.Action("File", new { id = ViewBag.ID })" style="width:100%"><i class="fa fa-random"></i> 存储</a> <span class="badge bg-danger">5</span>
+            </div>
+
+            <div class="col-lg-2">
+    <i class="fa fa-random"></i> 存储 <span class="badge bg-danger">5</span>
 
 </div><!--a href="@Url.Action("Detail", new { id = ViewBag.ID })" class="detail"><i class="fa fa-hdd-o"></i> @Resources.Repository_Detail_Detail</!--a>-->
 
